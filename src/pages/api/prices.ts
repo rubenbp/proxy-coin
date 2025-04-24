@@ -5,13 +5,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { path = [] } = req.query;
   const query = req.query;
   // Construir la URL de destino
-  const url = `https://api.coingecko.com/${
-    Array.isArray(path) ? path.join("/") : path
-  }`;
-
+  const url = `https://api.coingecko.com/api/v3/coins/markets`;
+  console.log("query", query);
   try {
     const response = await axios.get(url, {
       params: query,

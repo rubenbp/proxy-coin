@@ -1,12 +1,16 @@
 // pages/api/proxy/[...path].js
-import axios from "axios";
-
-export default async function handler(req, res) {
+import axios, { AxiosError } from "axios";
+import { NextApiRequest, NextApiResponse } from "next";
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { path = [] } = req.query;
   const query = req.query;
-
   // Construir la URL de destino
-  const url = `https://api.coingecko.com/${path.join("/")}`;
+  const url = `https://api.coingecko.com/${
+    Array.isArray(path) ? path.join("/") : path
+  }`;
 
   try {
     const response = await axios.get(url, {
@@ -19,9 +23,10 @@ export default async function handler(req, res) {
 
     res.status(200).json(response.data);
   } catch (error) {
-    const status = error.response?.status || 500;
+    const status = (error as AxiosError).response?.status || 500;
     const message =
-      error.response?.data || "Error al obtener datos de CoinGecko";
+      (error as AxiosError).response?.data ||
+      "Error al obtener datos de CoinGecko";
     res.status(status).json({ error: message });
   }
 }
